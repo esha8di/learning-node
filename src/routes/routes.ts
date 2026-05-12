@@ -1,5 +1,6 @@
 import type {IncomingMessage, ServerResponse} from "node:http";
-import {product} from "../controller/controller.products";
+import {products} from "../controller/controller.products";
+// import { products } from "../controller/controller.products";
 
 export function handleRoute(req:IncomingMessage,res:ServerResponse){
     const url=req.url;
@@ -12,7 +13,7 @@ export function handleRoute(req:IncomingMessage,res:ServerResponse){
         res.end(JSON.stringify({message:"this is root"}))
     }
     else if(url?.startsWith("/product")){
-        product(req,res)
+        products(req,res)
 
     }
     else{
