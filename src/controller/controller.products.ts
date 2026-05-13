@@ -4,7 +4,7 @@ import type { IProduct } from "../types/product";
 import { parse } from "node:path";
 import { parseBody } from "../utility/parseBody";
 
-export function products(req: IncomingMessage, res: ServerResponse) {
+export async function products(req: IncomingMessage, res: ServerResponse) {
   const url = req.url;
   const method = req.method;
 
@@ -38,7 +38,12 @@ export function products(req: IncomingMessage, res: ServerResponse) {
 }
 }
 else if (url === "/product" && method === "POST") {
-  const body=parseBody(req);
+  const body=await parseBody(req);
+  res.writeHead(200, {
+    "content-type": "application/json",
+  });
+  res.end(JSON.stringify({ message: "data receive successfully", data: body }));
+  
   
 }
 
