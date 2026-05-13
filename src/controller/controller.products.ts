@@ -1,9 +1,13 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { readProduct } from "../service/product.service";
+import type { IProduct } from "../types/product";
+import { parse } from "node:path";
+import { parseBody } from "../utility/parseBody";
 
 export function products(req: IncomingMessage, res: ServerResponse) {
   const url = req.url;
   const method = req.method;
+
 
   const urlParts = url?.split("/");
 
@@ -18,7 +22,7 @@ export function products(req: IncomingMessage, res: ServerResponse) {
     res.end(JSON.stringify({ message: "this is root", data: productList }));
   } else if (method === "GET" && id !== null) {
     const productList = readProduct();
-    const productWithId=productList.filter((product) => product.id === id);
+    const productWithId=productList.filter((product:IProduct) => product.id === id);
     if(productWithId.length>0){
       res.writeHead(200, {
         "content-type": "application/json",
@@ -32,6 +36,10 @@ export function products(req: IncomingMessage, res: ServerResponse) {
   });
   res.end(JSON.stringify({ message: "this data is not available" }));
 }
+}
+else if (url === "/product" && method === "POST") {
+  const body=parseBody(req);
+  
 }
 
 }
