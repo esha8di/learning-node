@@ -8,7 +8,6 @@ export async function products(req: IncomingMessage, res: ServerResponse) {
   const url = req.url;
   const method = req.method;
 
-
   const urlParts = url?.split("/");
 
   const id = urlParts && urlParts[1] === "product" ? Number(urlParts[2]) : null;
@@ -22,48 +21,67 @@ export async function products(req: IncomingMessage, res: ServerResponse) {
     res.end(JSON.stringify({ message: "this is root", data: productList }));
   } else if (method === "GET" && id !== null) {
     const productList = readProduct();
-    const productWithId=productList.filter((product:IProduct) => product.id === id);
-    if(productWithId.length>0){
+    const productWithId = productList.filter(
+      (product: IProduct) => product.id === id,
+    );
+    if (productWithId.length > 0) {
       res.writeHead(200, {
         "content-type": "application/json",
       });
-      res.end(JSON.stringify({ message: "data retrieve successfully", data: productWithId }));
-    
+      res.end(
+        JSON.stringify({
+          message: "data retrieve successfully",
+          data: productWithId,
+        }),
+      );
+    } else {
+      res.writeHead(404, {
+        "content-type": "application/json",
+      });
+      res.end(JSON.stringify({ message: "this data is not available" }));
+    }
+  } else if (url === "/product" && method === "POST") {
+    const body = await parseBody(req);
+    const productList = readProduct();
+    const productData = {
+      id: Date.now(),
+      ...body,
+    };
+    productList.push(productData);
+    writeproduct(productList);
+    res.writeHead(200, {
+      "content-type": "application/json",
+    });
+    res.end(
+      JSON.stringify({
+        message: "data receive successfully",
+        data: productData,
+      }),
+    );
+  } else if (method === "PUT" && id !== null) {
+    const body = await parseBody(req);
+    console.log(body);
+    const productList = readProduct();
+    const matchWithId = productList.findIndex(
+      (product: IProduct) => product.id == id,
+    );
+    if (matchWithId > -1) {
+      const updateProduct = {
+        id: id,
+        ...body,
+      };
+      productList[matchWithId] = updateProduct;
+      writeproduct(productList);
+      res.writeHead(200, {
+        "content-type": "application/json",
+      });
+      res.end(JSON.stringify({ message: "data receive successfully" }));
+    }
+      else {
+        res.writeHead(404, {
+          "content-type": "application/json",
+        });
+        res.end(JSON.stringify({ message: "data against this ID is not available" }));
+      }
   }
-  else{
-  res.writeHead(404, {
-    "content-type": "application/json",
-  });
-  res.end(JSON.stringify({ message: "this data is not available" }));
-}
-}
-else if (url === "/product" && method === "POST") {
-  const body=await parseBody(req);
-  const productList = readProduct();
-  const productData={
-    id:Date.now(),
-    ...body
-  }
-  productList.push(productData);
-  writeproduct(productList)
-  res.writeHead(200, {
-    "content-type": "application/json",
-  });
-  res.end(JSON.stringify({ message: "data receive successfully", data: productData }));
-  
-  
-}
-else if(method==="PUT" && id!==null){
-  const body=await parseBody(req);
-  console.log(body)
-   const productList = readProduct();
-   const matchWithId = productList.findIndex((product:IProduct)=>product.id==id);
-   console.log(matchWithId)
-    writeproduct(productList)
-  res.writeHead(200, {
-    "content-type": "application/json",
-  });
-  res.end(JSON.stringify({ message: "data receive successfully", }));
-}
-
 }
