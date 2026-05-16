@@ -53,5 +53,14 @@ else if (url === "/product" && method === "POST") {
   
   
 }
+else if(method==="PUT" && id!==null){
+   const productList = readProduct();
+  const productId=productList.findIndex((product:IProduct)=>product.id==id)
+  console.log(productId)
+  res.writeHead(200, {
+    "content-type": "application/json",
+  });
+  res.end(JSON.stringify({ message: "data receive successfully" }));
+}
 
 }
