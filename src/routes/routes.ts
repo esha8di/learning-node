@@ -17,7 +17,7 @@ export function handleRoute(req:IncomingMessage,res:ServerResponse){
 
     }
     else{
-        res.writeHead(200,{
+        res.writeHead(400,{
             "content-type":"application/json"
         })
         res.end(JSON.stringify({message:"route not found"}))

@@ -7,5 +7,5 @@ const server:Server=createServer((req:IncomingMessage,res:ServerResponse)=>{
 })
 
 server.listen(config.port,()=>{
-    console.log("Server is running on 8000")
+    console.log(`server is running on port ${config.port}`)
 })
